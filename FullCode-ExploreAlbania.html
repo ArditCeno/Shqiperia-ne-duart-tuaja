@@ -691,7 +691,7 @@
           { name:"Flia", blurb:" Flia është një ushqim tradicional shqiptar.Flija pasi të gatuhet preferohet të sherbehet me gjalpe të shkrire por ka edhe njerez që preferojne t'ja hedhi gjalpin gjate gatimit në saç.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Traditional_flia_charcoal_cooking.jpg/500px-Traditional_flia_charcoal_cooking.jpg" },
           { name:"Byrek shtëpie", blurb:"Me barishte ose djathë, i pjekur tradicionalisht.", img:"https://agroweb.org/wp-content/uploads/2018/09/byrek-mishi.jpg" }
         ],
-  
+ 
         quiz:[
           { q:"Dibra njihet për…", a:["Natyrë malore dhe burime termale","Vreshta bregdetare","Ishuj turistikë"], correct:0 },
           { q:"Një zonë e njohur malore lidhet me…", a:["Korabin","Karaburunin","Sazan"], correct:0 },
@@ -980,16 +980,16 @@
     function shuffleAnswers(question){
       const answers = [...question.a];
       const correctAnswer = answers[question.correct];
-      
+     
       // Fisher-Yates shuffle
       for(let i = answers.length - 1; i > 0; i--){
         const j = Math.floor(Math.random() * (i + 1));
         [answers[i], answers[j]] = [answers[j], answers[i]];
       }
-      
+     
       // Find where the correct answer ended up
       const correctIndex = answers.indexOf(correctAnswer);
-      
+     
       return {
         answers: answers,
         correctIndex: correctIndex
@@ -1007,9 +1007,6 @@
       return true;
     }
 
-    // =======================
-    // RENDER HUD & BADGES
-    // =======================
     function renderHud(){
       document.getElementById("points").textContent = state.points;
       document.getElementById("badgeCount").textContent = state.badges.length;
@@ -1033,10 +1030,7 @@
         wrap.appendChild(el);
       }
     }
-
-    // =======================
     // MAP
-    // =======================
     function renderMap(){
       const map = document.getElementById("map");
       map.innerHTML = "";
@@ -1060,9 +1054,7 @@
       });
     }
 
-    // =======================
-    // FOOD PHOTO HELPERS
-    // =======================
+
     function getFoodPhoto(qarkId, restIndex){
       const perQark = state.foodPhotos?.[qarkId];
       return perQark ? perQark[String(restIndex)] : null;
@@ -1074,9 +1066,7 @@
       saveState();
     }
 
-    // =======================
     // PANEL (QARK)
-    // =======================
     function selectQark(id){
       activeId = id;
       updateActiveMap();
@@ -1192,10 +1182,10 @@
         });
       });
 
-      // quiz submit
+      // mbarimi quizit
       panel.querySelector("#submitQuiz").addEventListener("click", ()=>submitQuiz(q));
 
-      // upload + claim (badge flow)
+      // ngarkimi + marja
       let uploaded = false;
       const uploadInput = panel.querySelector("#photoUpload");
       const uploadMsg = panel.querySelector("#uploadMsg");
@@ -1209,7 +1199,6 @@
         claimBadgeFlow(q, uploaded);
       });
 
-      // render existing food photos + wire upload per food
       wireFoodUploads(q);
     }
 
@@ -1220,7 +1209,6 @@
         const saveBtn = document.getElementById(`food_save_${q.id}_${idx}`);
         const hintEl = document.getElementById(`food_hint_${q.id}_${idx}`);
 
-        // set current photo if exists
         const saved = getFoodPhoto(q.id, idx);
         const fallback = r.img && r.img.trim() ? r.img.trim() : "https://images.unsplash.com/photo-1604908177072-8f2a5ad7889b?auto=format&fit=crop&w=800&q=60";
         const bgUrl = saved || fallback;
@@ -1314,9 +1302,6 @@
       renderBadges();
     }
 
-    // =======================
-    // MODAL (ATTRACTION + 360)
-    // =======================
     const modal = document.getElementById("attractionModal");
     const mTitle = document.getElementById("mTitle");
     const mImg = document.getElementById("mImg");
@@ -1360,9 +1345,6 @@
       panoFrame.src = "about:blank";
     });
 
-    // =======================
-    // BUTTONS
-    // =======================
     document.getElementById("randomBtn").addEventListener("click", ()=>{
       const pick = DATA[Math.floor(Math.random()*DATA.length)];
       selectQark(pick.id);
@@ -1374,8 +1356,8 @@
     });
 
 
-    
-    // --- Photo album: load, render and wire upload (multi-file + attraction select) ---
+   
+    // Albbum
     const PHOTO_KEY = 'userPhotos_v1';
     let userPhotos = JSON.parse(localStorage.getItem(PHOTO_KEY) || '[]');
 
@@ -1389,7 +1371,7 @@
         o.textContent = d.name;
         sel.appendChild(o);
       });
-      // clear attraction select
+
       const aSel = document.getElementById('photoAttractionSelect');
       if(aSel) aSel.innerHTML = '<option value="">Zgjidh atraksion (opsionale)</option>';
     }
@@ -1441,7 +1423,6 @@
       });
     }
 
-    // wire place -> attraction select
     document.getElementById('photoPlaceSelect')?.addEventListener('change', (e)=>{
       const pid = e.target.value;
       populateAttractionSelect(pid);
@@ -1485,7 +1466,7 @@
     populatePlaceSelect();
     renderGallery();
 
-    // --- USER PROFILE ---
+    // USER PROFILE
     const PROFILE_KEY = 'userProfile_v1';
     let userProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{"name":"Përdorues","avatar":"👤"}');
 
@@ -1526,5 +1507,71 @@
     renderBadges();
     renderMap();
   </script>
+
+  <footer style="margin-top: 80px; padding: 60px 16px 30px; border-top: 1px solid var(--line); background: linear-gradient(180deg, rgba(17,27,46,.6), rgba(15,23,41,.5)); text-align: center;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      
+      <!-- Main Content Section -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-bottom: 50px;">
+        
+        <!-- 1. Information  -->
+        <div style="order: 1;">
+          <h3 style="margin: 0 0 20px 0; font-size: 16px; color: var(--brand); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Rreth Platformës</h3>
+          <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: var(--muted); line-height: 1.6;">
+            <p style="margin: 0; font-weight: 500;">Shqipëria në duart tuaja</p>
+            <p style="margin: 0;">Një platformë interaktive edukative për zbulimin dhe eksplorimin e qarkave të Shqipërisë. Nëpërmjet quiz-eve të personalizuara, galerie fotografish dhe koleksionim badge-sh, ju mund të testoni njohuritë tuaja mbi turizmin lokal dhe atraktivitetet kulturore.</p>
+          </div>
+        </div>
+
+        <!-- 2. Contact Ways  -->
+        <div style="order: 2;">
+          <h3 style="margin: 0 0 20px 0; font-size: 16px; color: var(--brand); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Kontakti</h3>
+          <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+            <div>
+              <p style="margin: 0 0 12px 0; color: var(--text); font-weight: 600; font-size: 14px;">Ardit Ceno</p>
+            </div>
+            
+            <a href="tel:0694770832" style="color: var(--brand); text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(106,228,255,.2); background: rgba(106,228,255,.05);" title="Shuko numrin" onmouseover="this.style.background='rgba(106,228,255,.12)'; this.style.borderColor='rgba(106,228,255,.4)';" onmouseout="this.style.background='rgba(106,228,255,.05)'; this.style.borderColor='rgba(106,228,255,.2)';">
+              <span style="font-size: 16px;">📞</span> <span>069****832</span>
+            </a>
+            
+            <a href="mailto:arditceno1@gmail.com" style="color: var(--brand); text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(106,228,255,.2); background: rgba(106,228,255,.05);" title="Dërgo email" onmouseover="this.style.background='rgba(106,228,255,.12)'; this.style.borderColor='rgba(106,228,255,.4)';" onmouseout="this.style.background='rgba(106,228,255,.05)'; this.style.borderColor='rgba(106,228,255,.2)';">
+              <span style="font-size: 16px;">✉️</span> <span>arditceno1@gmail.com</span>
+            </a>
+
+            <div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.1);">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Social Media  -->
+        <div style="order: 3;">
+          <h3 style="margin: 0 0 20px 0; font-size: 16px; color: var(--brand2); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Rrjetet Sociale</h3>
+          <p style="margin: 0 0 16px 0; font-size: 12px; color: var(--muted);">Ndiqni për përditësimet dhe përmbajtjen ekskluzive</p>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(106,228,255,.2); border-radius: 10px; background: rgba(255,255,255,.04); color: var(--text); text-decoration: none; transition: all 0.2s; font-size: 20px; font-weight: bold;" title="Facebook" onmouseover="this.style.borderColor='rgba(106,228,255,.4)'; this.style.background='rgba(106,228,255,.12)';" onmouseout="this.style.borderColor='rgba(106,228,255,.2)'; this.style.background='rgba(255,255,255,.04)';">f</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(106,228,255,.2); border-radius: 10px; background: rgba(255,255,255,.04); color: var(--text); text-decoration: none; transition: all 0.2s; font-size: 20px;" title="Twitter" onmouseover="this.style.borderColor='rgba(106,228,255,.4)'; this.style.background='rgba(106,228,255,.12)';" onmouseout="this.style.borderColor='rgba(106,228,255,.2)'; this.style.background='rgba(255,255,255,.04)';">𝕏</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(167,139,250,.2); border-radius: 10px; background: rgba(255,255,255,.04); color: var(--text); text-decoration: none; transition: all 0.2s; font-size: 20px;" title="Instagram" onmouseover="this.style.borderColor='rgba(167,139,250,.4)'; this.style.background='rgba(167,139,250,.12)';" onmouseout="this.style.borderColor='rgba(167,139,250,.2)'; this.style.background='rgba(255,255,255,.04)';">📷</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(106,228,255,.2); border-radius: 10px; background: rgba(255,255,255,.04); color: var(--text); text-decoration: none; transition: all 0.2s; font-size: 20px;" title="LinkedIn" onmouseover="this.style.borderColor='rgba(106,228,255,.4)'; this.style.background='rgba(106,228,255,.12)';" onmouseout="this.style.borderColor='rgba(106,228,255,.2)'; this.style.background='rgba(255,255,255,.04)';">in</a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(251,113,133,.2); border-radius: 10px; background: rgba(255,255,255,.04); color: var(--text); text-decoration: none; transition: all 0.2s; font-size: 20px;" title="YouTube" onmouseover="this.style.borderColor='rgba(251,113,133,.4)'; this.style.background='rgba(251,113,133,.12)';" onmouseout="this.style.borderColor='rgba(251,113,133,.2)'; this.style.background='rgba(255,255,255,.04)';">▶️</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="border-top: 1px solid rgba(255,255,255,.1); margin: 40px 0 30px 0;"></div>
+
+      <!-- Bottom Section -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--muted);">
+        <p style="margin: 0;">© 2026 Shqipëria në duart tuaja. Të gjitha të drejtat e rezervuara.</p>
+        <div style="display: flex; gap: 20px;">
+          <a href="#" style="color: var(--muted); text-decoration: none; transition: color 0.2s;" title="Politika e privatësisë" onmouseover="this.style.color='var(--brand)';" onmouseout="this.style.color='var(--muted)';">Privatësia</a>
+          <a href="#" style="color: var(--muted); text-decoration: none; transition: color 0.2s;" title="Kushtet e përdorimit" onmouseover="this.style.color='var(--brand)';" onmouseout="this.style.color='var(--muted)';">Kushtet</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
 </body>
 </html>
