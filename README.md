@@ -55,8 +55,5 @@ enjoyable way to discover new places.
 
 ---
 
-## 🌍 Live Website
-https://arditceno.github.io/Shqiperia-ne-duart-tuaja/
-
 ## 👨‍💻 Author
 Ardit Ceno
