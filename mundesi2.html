@@ -1,0 +1,1530 @@
+<!doctype html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Explore Albania — Qarqet, t & Quiz</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111b2e;
+      --card2:#0f1729;
+      --text:#e7eefc;
+      --muted:#a9b6d3;
+      --brand:#6ae4ff;
+      --brand2:#a78bfa;
+      --ok:#34d399;
+      --bad:#fb7185;
+      --line:rgba(255,255,255,.12);
+      --shadow:0 14px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(106,228,255,.16), transparent 55%),
+                  radial-gradient(1000px 700px at 80% 20%, rgba(167,139,250,.14), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    a{color:inherit}
+    .app{
+      max-width:1200px;
+      margin:0 auto;
+      padding:22px 16px 40px;
+      display:grid;
+      gap:16px;
+    }
+    header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      padding:14px 16px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(17,27,46,.85), rgba(15,23,41,.75));
+      box-shadow: var(--shadow);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:260px;
+    }
+    .logo{
+      width:42px;height:28px;border-radius:8px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+      flex-shrink: 0;
+      object-fit: cover;
+      object-position: center;
+    }
+    h1{font-size:18px;margin:0;line-height:1.1}
+    .sub{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .hud{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      font-size:13px;
+      color:var(--text);
+      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+    }
+    .pill b{color:var(--brand)}
+    .btn{
+      cursor:pointer;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:600;
+      transition: transform .08s ease, background .2s ease;
+      user-select:none;
+    }
+    .btn:hover{background: rgba(255,255,255,.10)}
+    .btn:active{transform: translateY(1px)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+    }
+    @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(17,27,46,.78), rgba(15,23,41,.70));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .head{
+      padding:14px 16px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+    }
+    .card .head h2{margin:0;font-size:16px}
+    .card .head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .card .body{padding:16px}
+
+    /* "Harta" — grid klikues (zëvendësohet lehtë me SVG reale) */
+    .map{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    .region{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      min-height:74px;
+      position:relative;
+      overflow:hidden;
+    }
+    .region:hover{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(106,228,255,.35);
+    }
+    .region:active{transform: translateY(1px)}
+    .region .tag{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+    .region .name{
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .region .glow{
+      position:absolute; inset:-40px -40px auto auto;
+      width:120px; height:120px;
+      background: radial-gradient(circle at 30% 30%, rgba(106,228,255,.28), transparent 60%);
+      filter: blur(2px);
+      pointer-events:none;
+      transform: rotate(20deg);
+    }
+    .region.active{
+      border-color: rgba(167,139,250,.55);
+      background: rgba(167,139,250,.10);
+    }
+
+    /* Paneli i qarkut */
+    .kq{
+      display:grid;
+      gap:12px;
+    }
+    .kq .hero{
+      padding:14px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:
+        radial-gradient(900px 300px at 15% 30%, rgba(106,228,255,.10), transparent 55%),
+        radial-gradient(900px 300px at 85% 50%, rgba(167,139,250,.10), transparent 55%),
+        rgba(255,255,255,.03);
+    }
+    .kq .hero h3{margin:0 0 6px;font-size:18px}
+    .kq .hero .meta{
+      display:flex; gap:10px; flex-wrap:wrap;
+      color:var(--muted); font-size:12px;
+    }
+
+    /* Atraksione me pin */
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-top:6px;
+    }
+    .section-title h4{margin:0;font-size:14px}
+    .pins{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width:980px){ .pins{grid-template-columns:1fr} }
+    .pin{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(255,255,255,.03);
+      padding:12px;
+      cursor:pointer;
+      transition: background .2s ease, border-color .2s ease, transform .08s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .pin:hover{ background: rgba(255,255,255,.07); border-color: rgba(106,228,255,.35); }
+    .pin:active{ transform: translateY(1px); }
+    .pin .dot{
+      width:12px;height:12px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, var(--brand), rgba(106,228,255,.25));
+      box-shadow: 0 0 0 6px rgba(106,228,255,.10);
+      display:inline-block;
+      margin-right:8px;
+      vertical-align:middle;
+    }
+    .pin b{display:block;margin-top:4px}
+    .pin small{color:var(--muted)}
+    .thumb{
+      margin-top:10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      aspect-ratio: 16/10;
+      background:
+        linear-gradient(120deg, rgba(106,228,255,.20), rgba(167,139,250,.18)),
+        url("https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=800&q=60") center/cover no-repeat;
+      overflow:hidden;
+    }
+
+    /* Restorante */
+    .restos{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width:980px){ .restos{grid-template-columns:1fr} }
+    .rest{
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background: rgba(255,255,255,.03);
+    }
+    .rest .img{
+      height:120px;
+      background:
+        linear-gradient(120deg, rgba(106,228,255,.18), rgba(167,139,250,.16)),
+        url("https://images.unsplash.com/photo-1604908177072-8f2a5ad7889b?auto=format&fit=crop&w=800&q=60") center/cover no-repeat;
+      border-bottom:1px solid var(--line);
+    }
+    .rest .txt{padding:10px 12px}
+    .rest .txt b{display:block;margin-bottom:4px}
+    .rest .txt p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}
+
+    /* Upload foto për gatime */
+    .food-upload{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid rgba(255,255,255,.10);
+    }
+    .food-upload input[type="file"]{
+      font-size:12px;
+      color:var(--muted);
+      max-width:100%;
+    }
+    .food-upload .mini{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      cursor:pointer;
+      color:var(--text);
+      font-weight:700;
+      font-size:12px;
+    }
+    .food-upload .mini:hover{ background: rgba(255,255,255,.10) }
+    .food-upload .hint{ font-size:12px; color:var(--muted) }
+
+    /* Quiz */
+    .quiz{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(255,255,255,.03);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .qrow{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px;
+      background: rgba(0,0,0,.12);
+    }
+    .qrow .q{font-weight:700;margin-bottom:8px}
+    .opts{display:grid; gap:8px}
+    .opt{
+      display:flex; gap:8px; align-items:flex-start;
+      font-size:13px; color:var(--text);
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      cursor:pointer;
+      user-select:none;
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .opt:hover{background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.16)}
+    .opt input{margin-top:2px}
+    .quiz-actions{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+    }
+    .msg{color:var(--muted); font-size:12px}
+    .good{color:var(--ok)}
+    .bad{color:var(--bad)}
+
+    /* Modal (Atraksion + 360) */
+    dialog{
+      width:min(980px, 94vw);
+      border:none;
+      border-radius:18px;
+      padding:0;
+      background: rgba(12,18,32,.92);
+      color:var(--text);
+      box-shadow: 0 30px 70px rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.14);
+    }
+    dialog::backdrop{
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(3px);
+    }
+    .modal-head{
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+    }
+    .modal-head .title{font-weight:900}
+    .modal-body{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:12px;
+      padding:14px;
+    }
+    @media (max-width:900px){ .modal-body{grid-template-columns:1fr} }
+    .modal-img{
+      border-radius:14px;
+      border:1px solid var(--line);
+      overflow:hidden;
+      background:
+        linear-gradient(120deg, rgba(106,228,255,.18), rgba(167,139,250,.16)),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=60") center/cover no-repeat;
+      aspect-ratio: 16/10;
+      cursor:pointer;
+      position:relative;
+    }
+    .modal-img::after{
+      content:"Kliko për 360°";
+      position:absolute; left:10px; bottom:10px;
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.35);
+    }
+    .modal-info{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(255,255,255,.03);
+      padding:12px;
+    }
+    .modal-info h3{margin:0 0 8px}
+    .modal-info p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+    .viewer360{
+      display:none;
+      margin-top:10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background: rgba(0,0,0,.25);
+      aspect-ratio: 16/10;
+      position:relative;
+    }
+    .viewer360 iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+    }
+    .viewer360 .hint{
+      position:absolute; top:10px; left:10px;
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.35);
+      pointer-events:none;
+    }
+
+    /* Badge wall */
+    .badges{
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .badge{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      display:flex; gap:8px; align-items:center;
+    }
+    .badge .star{
+      width:18px;height:18px;border-radius:6px;
+      background: conic-gradient(from 180deg, var(--brand), var(--brand2), var(--brand));
+    }
+    .badge img{
+      width:20px;height:20px;border-radius:4px;object-fit:contain;flex-shrink:0;
+    }
+    .badge.unearned img{filter:grayscale(100%) opacity(.38);}
+    .badge.earned{border-color: rgba(106,228,255,.24); box-shadow: 0 8px 18px rgba(106,228,255,.06);}
+
+    /* Upload */
+    .upload{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      padding:12px;
+      border:1px dashed rgba(255,255,255,.20);
+      border-radius:14px;
+      background: rgba(255,255,255,.03);
+    }
+    input[type="file"]{
+      color:var(--muted);
+      max-width: 100%;
+    }
+    .tiny{font-size:12px;color:var(--muted);margin:0}
+
+    /* User Profile */
+    .profile-card{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .profile-card:hover{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(106,228,255,.35);
+    }
+    .profile-avatar{
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      object-fit:cover;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      color:var(--bg);
+      font-size:14px;
+      flex-shrink:0;
+    }
+    .profile-info{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .profile-info b{
+      font-size:12px;
+      font-weight:700;
+      color:var(--text);
+    }
+    .profile-info small{
+      font-size:10px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Flag_of_Albania.svg/1200px-Flag_of_Albania.svg.png" alt="Albanian Flag" />
+        <div>
+          <h1> Shqiperia ne duart tuaja</h1>
+          <div class="sub">Kliko një qark → shiko atraksionet, restorantet & bëj quiz për badge.</div>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="profile-card" id="profileCard" title="Kliko për të redaktuar profilin">
+          <div class="profile-avatar" id="profileAvatar">👤</div>
+          <div class="profile-info">
+            <b id="profileName">Përdorues</b>
+            <small id="profileStats">0 pikë · 0 badge</small>
+          </div>
+        </div>
+        <div class="pill">Pikë: <b id="points">0</b></div>
+        <div class="pill">Badge: <b id="badgeCount">0</b></div>
+        <button class="btn" id="resetBtn" title="Fshi pikët dhe badge">Reset</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="head">
+          <div>
+            <h2>Harta (12 Qarqe)</h2>
+            <p>Kjo është një “hartë” grid (placeholder). Me 12 qarqe te Shqipërisë, secili i dhene ne detaje.</p>
+          </div>
+          <button class="btn" id="randomBtn">Zgjidh rastësisht</button>
+        </div>
+        <div class="body">
+          <div class="map" id="map"></div>
+
+          <div style="margin-top:14px" class="card" aria-hidden="false">
+            <div class="head">
+              <div>
+                <h2>Badge-t e fituara</h2>
+                <p>Ruhet në browser (localStorage).</p>
+              </div>
+            </div>
+            <div class="body">
+              <div class="badges" id="badges"></div>
+              <p class="tiny" style="margin-top:10px">
+                Rregull: Badge fitohet kur bën quiz-in (≥3/5) dhe pastaj bën upload një foto nga ai qark.
+              </p>
+              <div style="margin-top:14px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Harta_e_rretheve_gjyq%C3%ABsore_t%C3%AB_Shqip%C3%ABris%C3%AB.svg/500px-Harta_e_rretheve_gjyq%C3%ABsore_t%C3%AB_Shqip%C3%ABris%C3%AB.svg.png" alt="Harta Administrative e Shqiperise" style="width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.14);" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="albumCard" style="margin-top:14px">
+            <div class="head">
+              <div>
+                <h2>Albumi Fotove</h2>
+                <p>Fotot që ke shtuar — çdo foto shfaq emrin e vendit.</p>
+              </div>
+            </div>
+            <div class="body">
+              <div class="upload" id="photoUploadArea">
+                <select id="photoPlaceSelect" style="min-width:160px">
+                  <option value="">Zgjidh qark</option>
+                </select>
+                <select id="photoAttractionSelect" style="min-width:160px">
+                  <option value="">Zgjidh atraksion (opsionale)</option>
+                </select>
+                <input type="file" id="photoInput" accept="image/*" multiple />
+                <button class="btn" id="addPhotoBtn">Shto Foto</button>
+              </div>
+
+              <div id="photoGallery" class="pins" style="margin-top:12px"></div>
+              <p class="tiny" style="margin-top:10px">Fotot ruhen lokalisht në browser (localStorage). Mund t'i fshish çdoherë.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="head">
+          <div>
+            <h2 id="panelTitle">Zgjidh një qark</h2>
+            <p id="panelSubtitle">Kliko në “hartë” për të hapur faqen e qarkut.</p>
+          </div>
+          <span class="pill" id="activeChip" style="display:none">Aktiv: <b id="activeName"></b></span>
+        </div>
+
+        <div class="body">
+          <div class="kq" id="panel">
+            <div class="hero">
+              <h3>Mirë se erdhe 👋</h3>
+              <div class="meta">
+                <span>• 12 qarqe</span>
+                <span>• 3 atraksione/qark</span>
+                <span>• Quiz 5 pyetje</span>
+              </div>
+              <p class="tiny" style="margin-top:10px">
+                Pasi të zgjedhësh një qark, do shfaqen pin-at e atraksioneve. Kliko pin → shfaqet imazhi. Kliko imazhin → 360°.
+              </p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <dialog id="attractionModal">
+      <div class="modal-head">
+        <div class="title" id="mTitle">Atraksioni</div>
+        <button class="btn" id="mClose">Mbyll</button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="modal-img" id="mImg" title="Kliko për 360°"></div>
+          <div class="viewer360" id="viewer360">
+            <div class="hint">360° (placeholder panoramë)</div>
+            <iframe id="panoFrame" allow="fullscreen"></iframe>
+          </div>
+        </div>
+        <div class="modal-info">
+          <h3 id="mInfoTitle">Info</h3>
+          <p id="mInfoText"></p>
+          <p class="tiny" style="margin-top:10px">
+            Shënim: Këtu përdorim një panoramë shembull. Mund të vendosësh panoramat e tua 360° (equirectangular) për çdo atraksion.
+          </p>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="profileModal">
+      <div class="modal-head">
+        <div class="title">Profili im</div>
+        <button class="btn" id="pClose">Mbyll</button>
+      </div>
+      <div class="modal-body" style="grid-template-columns:1fr;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">Avatar (emoji ose URL fotografie)</label>
+            <input type="text" id="profileAvatarInput" placeholder="😊 ose https://..." style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:var(--text);font-size:13px;" />
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">Emri</label>
+            <input type="text" id="profileNameInput" placeholder="Emri yt" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:var(--text);font-size:13px;" />
+          </div>
+          <button class="btn" id="profileSaveBtn" style="width:100%;margin-top:8px;background:rgba(106,228,255,.15);border-color:rgba(106,228,255,.35);">Ruaj</button>
+        </div>
+      </div>
+    </dialog>
+
+  </div>
+
+  <script>
+   
+    const DATA = [
+      {
+        id:"berat",
+        name:"Berat",
+        tagline:"Qyteti i një mbi një dritareve",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Stema_e_Qarkut_Berat.svg/960px-Stema_e_Qarkut_Berat.svg.png",
+        info:"Berati (i njohur edhe si qyteti i një mbi një dritareve) është një qytet në jug të Shqipërisë dhe njëkohësisht qendra administrative e Qarkut të Beratit. Sipas regjistrimit të popullsisë të vitit 2011, qyteti ka një popullsi prej 60,031 banorësh, duke e renditur të nëntin për nga madhësia e popullsisë në Republikën e Shqipërisë. Gjendet rreth 70 km në vijë ajrore në jug të Tiranës dhe përshkohet nga lumi Osum. Qyteti është i rrethuar nga kodra dhe male, ndër të cilat spikat mali i Tomorrit, një masiv malor i rëndësishëm dhe njëkohësisht Park Kombëtar, i njohur për vlerat natyrore dhe kulturore.",
+        attractions:[
+          { name:"Kalaja e Beratit", desc:"Kompleks historik me pamje panoramike dhe lagje brenda mureve.", img:"https://upload.wikimedia.org/wikipedia/commons/7/7a/Kalaja_e_beratit2.jpg" },
+          { name:"Mangalem & Gorica", desc:"Lagje karakteristike për arkitekturën osmane dhe urën mbi Osum.", img:"https://www.kultplus.com/wp-content/uploads/2020/07/BeratAlbaniaWhiteCity-4-728x430.jpg" },
+          { name:"Kanionet e Osumit", desc:"Natyrë spektakolare, sidomos në pranverë; rafting dhe ecje.", img:"https://ata.gov.al/wp-content/uploads/2020/08/117818619_2476011966007237_748916705847241224_n.jpg" },
+          { name:"Ura e Gorices", desc:"Ura e Goricës është një nga monumentet e kulturës dhe të arkitekturës së Beratit dhe njëkohësisht një nga simbolet e tij", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Ura_e_Beratit_%28Goric%C3%ABs%29.jpg/500px-Ura_e_Beratit_%28Goric%C3%ABs%29.jpg" }
+
+        ],
+        restos:[
+          { name:"Biftek Vienez", blurb:"Mish i shijshëm dhe i shtypur hollë, i mbushur me arra dhe djathë, i mbështjellë, i brumosur dhe i skuqur derisa të marrë ngjyrë të artë krokante.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6o3CeJiKJ3_5RmrTCSK5KNUyts7TnpP5t6Q&s" },
+          { name:"Romstek", blurb:"Mish i shijshëm dhe i shtypur hollë, i mbushur me arra dhe djathë, i mbështjellë, i brumosur dhe i skuqur derisa të marrë ngjyrë të artë krokante.", img:"https://cdnimpuls.com/alfapress.al/media3/-640-0-img-1630-777.jpeg" },
+          { name:"Rosnica", blurb:"Kjo është një pjatë fantastike e kombinimit të roshnicave, kokrrizave të formuara nga mielli dhe vezët dhe mishit të freskët të pulës apo zogut të fshatit", img:"https://www.balkanweb.com/wp-content/uploads/2018/10/pule-me-rosnica.jpg" }
+        ],
+        quiz:[
+          { q:"Berati është i njohur si…", a:["Qyteti i një mbi një dritareve","Qyteti i 1000 rrugëve","Qyteti i liqeneve"], correct:0 },
+          { q:"Cili lumë kalon pranë Beratit?", a:["Osum","Drin","Buna"], correct:0 },
+          { q:"Kalaja e Beratit është…", a:["Kompleks historik mbi kodër","Park detar","Ishull në liqen"], correct:0 },
+          { q:"Lagjet e vjetra tipike janë…", a:["Mangalem & Gorica","Zogu i Zi & Komuna","Laprakë & Fresk"], correct:0 },
+          { q:"Kanionet e Osumit janë të njohura për…", a:["Peizazh dhe aventura natyrore","Shkretëtirë rëre","Ski gjithë vitin"], correct:0 }
+        ]
+      },
+      {
+        id:"diber",
+        name:"Dibër",
+        tagline:"Natyrë malore & traditë",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/ALB_Qarku_i_Dibr%C3%ABs_COA.svg/960px-ALB_Qarku_i_Dibr%C3%ABs_COA.svg.png",
+        info:"Dibër është një qytet që shtrihet në zonën kufitare mes Maqedonisë Verioe dhe Shqiperise jashtë rrugës nga Struga për në Gostivar. Është poashtu komunë apo bashki Komuna e Dibrës. Dibra ka një shumicë etnike shqiptare prej 74% dhe është qyteti i vetëm i Maqedonisë së Veriut në të cilën maqedonasit etnikë nuk renditen në vendin e parë apo të dytë demografikisht. Gjuha zyrtare është shqipja. Dibra në planin kombëtar shqiptar është qytet i rëndësishëm për Kongresin e Dibrës, i mbajtur më 1909, i cili deklaroi që gjuha shqipe mund të mësohej brenda Perandorisë Osmane.",
+        attractions:[
+          { name:"Banjat Termale (Peshkopi)", desc:"Relaks në ujëra termale dhe traditë lokale.", img:"https://www.iett.al/wp-content/uploads/2020/12/llixhat_peshkopi_1.jpg" },
+          { name:"Korabi", desc:"Mali më i lartë në Shqipëri (2,764 m).Perfekt për alpinizëm, hiking dhe ecoturizëm", img:"https://upload.wikimedia.org/wikipedia/commons/7/78/Velky_Korab_2011.jpg" },
+          { name:"Peizazhet e Lurës", desc:"Natyrë malore e qetë, ideale për foto dhe piknik.", img:"https://probizz.al/wp-content/uploads/2021/09/421102.jpg" }
+        ],
+        restos:[
+          { name:"Mish në saç", blurb:"Gatim i ngadalshëm, aromë druri dhe shije e plotë.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJUEB7hksKa0AV9l1Js59-XGS5SvcXwSb8og&s" },
+          { name:"Flia", blurb:" Flia është një ushqim tradicional shqiptar.Flija pasi të gatuhet preferohet të sherbehet me gjalpe të shkrire por ka edhe njerez që preferojne t'ja hedhi gjalpin gjate gatimit në saç.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Traditional_flia_charcoal_cooking.jpg/500px-Traditional_flia_charcoal_cooking.jpg" },
+          { name:"Byrek shtëpie", blurb:"Me barishte ose djathë, i pjekur tradicionalisht.", img:"https://agroweb.org/wp-content/uploads/2018/09/byrek-mishi.jpg" }
+        ],
+  
+        quiz:[
+          { q:"Dibra njihet për…", a:["Natyrë malore dhe burime termale","Vreshta bregdetare","Ishuj turistikë"], correct:0 },
+          { q:"Një zonë e njohur malore lidhet me…", a:["Korabin","Karaburunin","Sazan"], correct:0 },
+          { q:"Një gatim tradicional i zonës është…", a:["Flia","Sushi","Paella"], correct:0 },
+          { q:"Qyteti kryesor i Dibrës është…", a:["Peshkopia","Saranda","Shëngjini"], correct:0 },
+          { q:"Turizmi tipik në Dibër është…", a:["Ecje dhe natyrë","Safari në shkretëtirë","Lundrim oqeanik"], correct:0 }
+        ]
+      },
+      {
+        id:"durres",
+        name:"Durrës",
+        tagline:"Bregdet & histori antike",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Stema_e_Qarkut_Durr%C3%ABs.svg/960px-Stema_e_Qarkut_Durr%C3%ABs.svg.png",
+        info:"Qarku i Durrësit është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqe prej 766 km². Qarku i Durrësit i përfshin rrethin e Durrësit dhe rrethin e Krujës. Qendra e Qarkut të Durrësit ndodhet në qytetin e Durrësit. ISO 3166-2-Code është AL-02. Qarku i Durrësit kufizohet në veri me Qarkun e Lezhës, në perëndim ka dalje në detin Adriatik, ndërsa në Jug kufizohet me Qarkun e Tiranës. Ky rajoni është një prej dy qarqeve kryesore për ekonomin të qyteteve të Tiranës dhe Durrësit. Qarku i Durrësit ka një popullsi prej 284,823 ( 2017 )banorë.",
+        attractions:[
+          { name:"Amfiteatri i Durrësit", desc:"Amfiteatri i Durrësit, më i madhi dhe më i rëndësishmi, jo vetëm në Shqipëri, por edhe në Ballkan, është ndërtuar në fillim të shek të II të e.s gjatë sundimit të perandorit Trajan.", img:"https://upload.wikimedia.org/wikipedia/sq/3/30/Amfiteatri_i_Durr%C3%ABsit.JPG" },
+          { name:"Muzeu e Skënderbeut në Krujë", desc:"Muzeu Kombëtar Gjergj Kastrioti Skënderbeu i njohur edhe si Muzeu i Skënderbeut dhe Muzeu i Krujës, ndodhet në Krujë dhe është një nga më të vizituarit në Shqipëri.", img:"https://upload.wikimedia.org/wikipedia/commons/f/f7/Kruja.jpg" },
+          { name:"Kepi i Rodonit", desc:"Kepi i Rodonit është një rrip toke në formë gadishulli që futet në brendësi të detit Adriatik. Ai shtrihet në formë trekëndëshi midis gjirit të Rodonit në veri dhe atij të Lalzit në jug. Në veri të tij derdhet lumi i Ishmit një nga lumenjtë e vegjël të Shqipërisë. Kepi i Rodonit është kepi më i madh në vendin tonë, i cili mbyll nga ana e jugut gjirin e Drinit.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Rodoni_Castle_2016-07-15_01.jpg/1280px-Rodoni_Castle_2016-07-15_01.jpg" }
+        ],
+         restos:[
+          { name:"Midhe me salcë ose zgare(Durres)", blurb:"Zgjedhje deti, të përgatitura me midhe të freskëta deti, të gatuara thjesht me erëza ose me salcë aromatike për të ruajtur shijen natyrale të detit.", img:"https://unegatuaj.com/wp-content/uploads/2012/07/Midhje-me-vere-te-bardhe-975x1300.jpg" },
+          {  name:"Qengj në furrë me arra(Kruje)", blurb:"Miks mishi i qengjit piqet ngadalë në furrë dhe shoqërohet me arra të grira, duke i dhënë shije të pasur dhe aromë karakteristike.", img:"https://agroweb.org/wp-content/uploads/2018/12/Qengji1.jpg" },
+          {  name:"Speca të mbushur(Shijak)", blurb:"Klasik të përgatitur me speca të mbushur me mish të grirë, oriz dhe erëza, të pjekur ose të zier në salcë për një shije të plotë dhe shtëpie.", img:"https://agroweb.org/wp-content/uploads/2018/06/speca-te-mbushur.jpg" }
+        ],
+
+        quiz:[
+          { q:"Durrësi njihet si…", a:["Qytet port dhe bregdetar","Qytet alpin","Qytet i shkretëtirës"], correct:0 },
+          { q:"Atraksioni antik kryesor është…", a:["Amfiteatri","Kulla e sahatit","Ujëvara"], correct:0 },
+          { q:"Durrësi lidhet fort me…", a:["Detin","Liqenet akullnajore","Shpellat e thella"], correct:0 },
+          { q:"Një ushqim tipik në Durrës është…", a:["Peshk i freskët","Tacos","Ramen"], correct:0 },
+          { q:"Kepi i Rodonit është…", a:["Zonë bregdetare afër Durrësit","Mali më i lartë","Park ski"], correct:0 }
+        ]
+      },
+
+      {
+        id:"elbasan",
+        name:"Elbasan",
+        tagline:"Qendër historike & traditë",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Stema_e_Qarkut_Elbasan.svg/960px-Stema_e_Qarkut_Elbasan.svg.png",
+        info:"Qarku i Elbasanit është një nga 12 qarqet në Shqipëri, ka një sipërfaqje prej 3,278 km² dhe ka një popullsi prej 283,822 ( 2017) banorë. Qendra e Qarkut të Elbasanit ndodhet në qytetin e Elbasanit. ISO 3166-2-Code është AL-03. Rajoni lindore dhe veriore është e dominuar nga luginën e Shkumbinit, pjesa në jug është e dominuar nga Devolli dhe Semanit.",
+        attractions:[
+          { name:"Kalaja e Elbasanit", desc:"Kalaja e Elbasanit u ndërtua në shek. XV nga sulltan Mehmeti II mbi rrënoja romake. Ajo ka qenë qendër e rëndësishme ushtarake dhe sot përbën zemrën historike të qytetit.", img:"https://upload.wikimedia.org/wikipedia/commons/a/a6/Elbasan_Castle%2C_Elbasan%2C_Albania_October_2022.jpg" },
+          { name:"Shkumbini", desc:"Shkumbin është një nga lumenjtë kryesorë të Shqipërisë. Ai përshkon vendin nga lindja në perëndim dhe historikisht ka shërbyer si ndarje natyrore mes veriut dhe jugut.", img:"https://albanopedia.com/wp-content/uploads/2022/10/Shkumbin-river-valley-featured-image-photo-by-Agon-Nimani.jpg" },
+          { name:"Liqenet e Belshit", desc:"Liqenet e Belshit janë një grup liqenesh karstike në zonën e Dumresë. Të njohura për bukurinë natyrore dhe qetësinë, ato janë ideale për shëtitje dhe turizëm natyror.", img:"https://www.balkanweb.com/wp-content/uploads/2018/08/Dumre-Belsh-ok-3.jpeg" }
+        ],
+        restos:[
+          { name:"Ballokume", blurb:"Ëmbëlsira më karakteristike e zonës, përgatitet me miell misri, gjalpë, sheqer dhe vezë. Tradicionalisht gatuhet për Ditën e Verës.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Ballokume_dhe_lule.jpg/250px-Ballokume_dhe_lule.jpg" },
+          { name:"Kabuni", blurb:"Ëmbëlsirë tradicionale me oriz, mish (zakonisht qengji), sheqer dhe kanellë, që shërbehet në festa dhe raste të veçanta.", img:"https://i0.wp.com/cookingfromheart.com/wp-content/uploads/2016/02/ch_dsc_0907_1.jpg?resize=720%2C511&ssl=1" },
+          { name:"Tavë me mish", blurb:"Gatuhet zakonisht me mish qengji ose viçi, qepë dhe erëza, në tavë balte. Është një nga gatimet më të zakonshme familjare.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Elbasan_tav%C3%AB_me_mish_qengji.jpg/2560px-Elbasan_tav%C3%AB_me_mish_qengji.jpg" }
+        ],
+        quiz:[
+          { q:"Elbasani ka një…", a:["Kala historike","Port detar","Ishull"], correct:0 },
+          { q:"Ëmbëlsira tipike është…", a:["Ballokume","Baklava turke vetëm","Cheesecake"], correct:0 },
+          { q:"Elbasani ndodhet…", a:["Në qendër të Shqipërisë","Në jug ekstrem","Në një ishull"], correct:0 },
+          { q:"Një lumë i rëndësishëm në zonë është…", a:["Shkumbin","Bunë","Valbonë"], correct:0 },
+          { q:"Park në qytet është…", a:["Rinia","Butrinti","Llogara"], correct:0 }
+        ]
+      },
+
+      {
+        id:"fier",
+        name:"Fier",
+        tagline:"Antikitet & fushë e gjerë",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Stema_e_Qarkut_Fier.svg/960px-Stema_e_Qarkut_Fier.svg.png",
+        info:"Qarku i Fierit është njëri nga 12 qarqet në Shqipëri me një sipërfaqje prej 1.887 km². Qarku i Fierit i përfshin rrethin e Fierit, rrethin e Lushnjës dhe rrethin e Mallakastrës. Qendra e Qarkut të Fierit ndodhet në qytetin e Fierit. ISO 3166-2-Code është AL-04. Qarku i Fierit kufizohet në veri me Qarkun e Durrësit, në veriperëndim me detin Adriatik, në Verilindje me qarkun e Elbasanit, në lindje me qarkun e Beratit, në juglindje me qarkun e Gjirokastrës dhe në jug me qarkun e Vlorës. Qarku i Fierit ka një popullsi prej 302.507 ( 2017) banorë. Në qarkun e Fierit rrjedh lumi Seman. Në veri të qarkut lumi Shkumbin dhe në jug lumi Vjosa. Qarku i Fierit është dominuar nga zona e Myzeqesë në të ndodhet lokaliteti i lashtë historik qyteti ilir Apollonia.",
+        attractions:[
+          { name:"Parku Arkeologjik i Apolonisë", desc:"Qytet antik i themeluar rreth shek. VI p.e.s. nga kolonë grekë (Korinth & Korkyra). U bë një qendër e madhe ekonomike, kulturore dhe arsimore në Iliri dhe më pas në Perandorinë Romake", img:"https://upload.wikimedia.org/wikipedia/commons/d/d3/Apollonia_Ruins_near_Fieri_%28Albania%29.jpg" },
+          { name:"Semani", desc:"Ai formohet nga bashkimi i Devollit dhe Osumit, rrjedh nëpër Myzeqe dhe derdhet në Detin Adriatik. Semani ka rëndësi për bujqësinë, pasi ujit fusha pjellore, por njihet edhe për prurjet e mëdha të sedimenteve që ndryshojnë shpesh shtratin e tij.", img:"https://images.openai.com/thumbnails/url/krqz73icu5meUVJSUGylr5-al1xUWVCSmqJbkpRnoJdeXJJYkpmsl5yfq5-Zm5ieWmxfaAuUsXL0S7F0Tw7xSw438A9xNk4KCirOLDEocgtx9bXIDykpqHTNKE40KLcscHIJDk9KzYkvVyu2NTQAAAq-JU0" },
+          { name:"Manastiri i Ardenicës", desc:"I ndërtuar në shek. XIII (1282), manastiri i kushtohet Shën Marisë dhe ndodhet pranë Lushnjës, mbi një kodër me pamje nga fusha e Myzeqesë. Ai njihet për arkitekturën bizantine, afresket e bukura dhe ikonostasin e gdhendur.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Ardenica_Monastery_%28by_Pudelek%29.JPG/1200px-Ardenica_Monastery_%28by_Pudelek%29.JPG" }
+        ],
+        restos:[
+          { name:"Tavë kosi", blurb:"Një nga gatimet më të njohura, përgatitet me mish qengji, kos, vezë dhe oriz. Shumë e përhapur në Fier dhe zonat përreth", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOijX3BkHZMnUxRfFjyGhGfXf-B6bhUYTqKg&s" },
+          { name:"Byrek me mish", blurb:"Byrek tradicional me petë shtëpie, i mbushur me mish të grirë dhe qepë. Gatuhet shpesh për festa familjare.", img:"https://agroweb.org/wp-content/uploads/2018/09/byrek-mishi.jpg" },
+          { name:"Qengj në hell", blurb:"Gatim tipik për dasmë dhe festa, i njohur për shijen dhe mënyrën tradicionale të përgatitjes.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQu_xHt7muyJn0yEKZ9m2Rw_p5Jw0Ocohtw1w&s" }
+        ],
+        quiz:[
+          { q:"Apolonia është…", a:["Park arkeologjik i rëndësishëm","Park ujor","Shpellë"], correct:0 },
+          { q:"Fieri lidhet me…", a:["Trashëgimi antike dhe fushë","Turizëm ski","Ishuj"], correct:0 },
+          { q:"Një monument afër është…", a:["Ardenica","Rozafa","Ali Pasha"], correct:0 },
+          { q:"Apolonia i përket periudhës…", a:["Antike","Moderne vetëm","Industriale"], correct:0 },
+          { q:"Gatim tradicional i zakonshëm është…", a:["Tavë dheu","Sashimi","Burrito"], correct:0 }
+        ]
+      },
+
+      {
+        id:"gjirokaster",
+        name:"Gjirokastër",
+        tagline:"Qytet muze & gur",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Stema_e_Qarkut_Gjirokast%C3%ABr.svg/500px-Stema_e_Qarkut_Gjirokast%C3%ABr.svg.png",
+        info:"Qarku i Gjirokastrës është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqje prej 2.884 km². Qarku i Gjirokastrësi përfshin rrethin e Gjirokastrës, rrethin e Përmetit dhe rrethin e Tepelenës. Qendra e Qarkut te GJirokastres ndodhet në qytetin e Gjirokastrës. ISO 3166-2-Code është AL-05. Qarku i Gjirokastrës kufizohet në veri me Qarkun e Beratit, në veriperëndim me Qarkun e Fierit, në jug deri në perëndim me Qarkun e Vlorës, në juglindje me Greqinë dhe në lindje me Qarkun e Korçës. Në Qarkun e Gjirokastrës rrjedh lumi Vjosa dhe në jug lumi Drino.",
+        attractions:[
+          { name:"Kalaja e Gjirokastrës", desc:"Kalaja e Gjirokastrës është simboli i qytetit. Një nga kështjellat më të mëdha në Shqipëri, me muze dhe pamje mbresëlënëse mbi qytetin.", img:"https://media.tacdn.com/media/attractions-splice-spp-674x446/13/d6/8e/e2.jpg" },
+          { name:"Qyteti i Vjetër i Gjirokastrës", desc:"Gjirokastra njihet për shtëpitë karakteristike prej guri dhe rrugicat e pjerrëta. Është pjesë e Trashëgimisë Botërore të UNESCO-s.", img:"https://images.squarespace-cdn.com/content/v1/57b9b98a29687f1ef5c622df/1477910131983-1LQG3BHN9XGY9C1Z1T4X/Gjirokaster" },
+          { name:"Syri i Kaltër", desc:"Syri i Kaltër është një burim natyror me ujë kristal të kaltër, shumë i vizituar nga turistët.", img:"https://ionian-cruises.com/wp-content/uploads/2018/04/Albania-Blue-Eye.jpg" }
+        ],
+        restos:[
+          { name:"Qifqi", blurb:"Gatimi më tipik i Gjirokastrës. Përgatitet me oriz, vezë dhe erëza, piqet në enë speciale dhe shërbehet zakonisht si antipastë.", img:"https://www.tiranatimes.com/wp-content/uploads/2017/07/qifqi.jpg" },
+          { name:"Pasha qofte", blurb:"Qofte të buta me mish të grirë, vezë dhe miell, të gatuara në lëng me limon. Një pjatë shumë e përhapur në zonë.", img:"https://i0.wp.com/www.mimisrecipes.com/wp-content/uploads/2020/05/Meatball-Soup-Pasha-Qofte-Featured.jpg?ssl=1&w=760" },
+          { name:"Oshaf", blurb:"Ëmbëlsirë tradicionale me fiq të thatë dhe qumësht, tipike për jugun e Shqipërisë, sidomos për festa.", img:"https://images.squarespace-cdn.com/content/v1/65f810154f5c8c44e6ad6104/1713528004063-WT9Y7R1M7E17O86USK2J/24.jpg?format=2500w" }
+        ],
+        quiz:[
+          { q:"Gjirokastra njihet si…", a:["Qytet i gurit","Qytet i akullit","Qytet në ishull"], correct:0 },
+          { q:"Atraksion kryesor është…", a:["Kalaja","Piramida","Porti"], correct:0 },
+          { q:"Pazari i vjetër është…", a:["Zonë historike me dyqane","Liqen artificial","Park ski"], correct:0 },
+          { q:"Syri i Kaltër është…", a:["Burim natyror","Vullkan","Kështjellë"], correct:0 },
+          { q:"Gatim tipik i jugut është…", a:["Qifqi","Hot dog","Tempura"], correct:0 }
+        ]
+      },
+
+      {
+        id:"korce",
+        name:"Korçë",
+        tagline:"Kulturë, serenata & natyrë",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Stema_e_Qarkut_Kor%C3%A7%C3%AB.svg/500px-Stema_e_Qarkut_Kor%C3%A7%C3%AB.svg.png",
+        info:"Qarku i Korçës është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqje prej 3.711 km². Qarku i Korçës i përfshin rrethin e Devollit, rrethin e Kolonjës, rrethin e Korçës dhe rrethin e Pogradecit. Qendra e Qarkut të Korçës ndodhet në qytetin e Korçës. ISO 3166-2-Code është AL-06. Qarku i Korçës kufizohet në verilindje dhe në lindje me Maqedoninë, në jug me Greqinë, në jugperëndim me Qarkun e Gjirokastrës, në perëndim me Qarkun e Beratit dhe në veriperëndim me Qarkun e Elbasanit. Qarku i Korçës ka një popullsi prej 258.100[1] banorë.",
+        attractions:[
+          { name:"Pazari i Korçës", desc:"Pazari i Vjetër i Korçës është zemra kulturore e qytetit, me rrugë kalldrëmi, dyqane artizanale dhe kafene tradicionale.", img:"https://albaniatravelguide.net/wp-content/uploads/2022/10/Korca-bazar-AB.jpg" },
+          { name:"Voskopoja", desc:"Voskopoja është e famshme për kishat me afreske dhe historinë e saj si qendër e rëndësishme kulturore në shek. XVIII.", img:"https://7mostendangered.eu/wp-content/uploads/2018/08/7ME-2018-AL-VOSKOPOJA-internal.jpg" },
+          { name:"Muzeu Kombëtar i Arsimit", desc:"Muzeu Kombëtar i Arsimit ndodhet në ndërtesën e shkollës së parë shqipe dhe është shumë i rëndësishëm për historinë e gjuhës dhe arsimit shqiptar.", img:"https://upload.wikimedia.org/wikipedia/commons/6/63/Kor%C3%A7%C3%AB_04.jpg" }
+        ],
+        restos:[
+          { name:"Lakror", blurb:"Gatimi më karakteristik i zonës. Përgatitet me petë të holla, të mbushura me qepë, domate, spinaq ose mish, dhe piqet tradicionalisht në saç", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjoPvAyF5wef78gKjBacGyi4M91It1WgUmtA&s" },
+          { name:"Kernacka", blurb:" Kernacka është një recetë karakteristike e zonës së Korçës ku përbërsi kryesor është mishi. Pjekja në sgare e kernacka korce i jep akoma më shume shije", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5-s24oI3vJlAf1j0utkHBqNZuTEkEnCs62Q&s" },
+          { name:"Petanik", blurb:"Pjatë tradicionale me miell misri, ujë dhe gjalpë, e thjeshtë por shumë e shijshme.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9PdeUhf01bsxxt7Omecd2wAIG04QRbhc7vg&s" }
+        ],
+        quiz:[
+          { q:"Korça njihet për…", a:["Kulturë dhe traditë qytetare","Varka oqeanike","Shkretëtirë"], correct:0 },
+          { q:"Voskopoja është…", a:["Zonë historike afër Korçës","Ishull turistik","Port detar"], correct:0 },
+          { q:"Një gatim i njohur është…", a:["Lakror","Sushi","Nachos"], correct:0 },
+          { q:"Zona lidhet me…", a:["Liqenin e Prespës","Detin Adriatik","Oqeanin Atlantik"], correct:0 },
+          { q:"Pazari i Korçës është…", a:["Vend shëtitjeje dhe tregu","Vullkan","Ujëvarë"], correct:0 }
+        ]
+      },
+
+      {
+        id:"kukes",
+        name:"Kukes",
+        tagline:"Alpe & liqene",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Stema_e_Qarkut_Kuk%C3%ABs.svg/960px-Stema_e_Qarkut_Kuk%C3%ABs.svg.png",
+        info:"Qarku i Kukësit është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqje prej 2.373 km². Qarku i Kukësit i përfshin rrethin e Hasit, rrethin e Kukësit dhe rrethin e Tropojës. Kryeqendrat sipas rretheve janë: Kukësi, për rrethin Kukës, Kruma për rrethin Has dhe B. Curri (ish-Kolgecaj) për rrethin Tropojë. Qarku i Kukësit kufizohet në verilindje dhe deri në lindje me Kosovën, në jug me Qarkun e Dibrës, në jugperëndim me Qarkun e Lezhës, në perëndim me Qarkun e Shkodrës dhe në veriperëndim me Malin e Zi. ISO 3166-2-Code është AL-07. Qarku i Kukësit ka një popullsi prej 78.239[1] banorë.",
+        attractions:[
+          { name:"Liqeni i Fierzës", desc:"Liqeni i Fierzës është liqeni artificial më i madh në Shqipëri, ideal për shëtitje, peshkim dhe pamje panoramike.", img:"https://albaniatouristplaces.com/wp-content/uploads/2023/02/lake-of-fierza.jpg" },
+          { name:"Valbona", desc:"Parku Kombëtar i Valbonës ofron alpe madhështore, shtigje ecjeje dhe natyrë të paprekur.", img:"https://images.ctfassets.net/wv75stsetqy3/5tBwWrpkhTFXioqWRmzeHe/f68262ddc99584434e85dddab3b3dcaf/migrated-ejicYr-Post_content_image__7197913?fit=fill&fm=webp&q=60" },
+          { name:"Gryka e Vanave", desc:"Gryka e Vanave është një atraksion natyror i bukur, i përshtatshëm për eksplorim dhe fotografi.", img:"https://lovealbania.al/wp-content/uploads/2025/08/shoshan-3-edited.webp" }
+        ],
+        restos:[
+          { name:"Mish në tepsi", blurb:"Gatim i thjeshtë, zakonisht me mish qengji ose viçi, i pjekur me patate dhe erëza.", img:"https://agroweb.org/wp-content/uploads/2018/12/Qengji1.jpg" },
+          { name:"Flia", blurb:"Gatimi më karakteristik i zonës, përgatitet me petë të holla dhe kos, piqet ngadalë nën saç dhe shërbehet zakonisht me mjaltë ose kos.", img:"https://davidsbeenhere.com/wp-content/uploads/2020/12/video-albanias-most-popular-food-trying-flija-kukes-attractions-albania-davidsbeenhere-10-980x552.jpg" },
+          { name:"Qull misri", blurb:"Ushqim tradicional i përditshëm, përgatitet me miell misri dhe ujë, shërbehet me kos ose djathë.", img:"https://agroweb.org/wp-content/uploads/2018/03/qullmepule.jpg" }
+        ],
+        quiz:[
+          { q:"Kukësi lidhet me…", a:["Natyrë malore dhe liqene","Plazhe tropikale","Shkretëtirë rëre"], correct:0 },
+          { q:"Liqen i njohur në zonë është…", a:["Fierza","Shkodra","Butrinti"], correct:0 },
+          { q:"Një zonë malore është…", a:["Shishtavec","Karaburun","Llogara (si qark tjetër)"], correct:0 },
+          { q:"Drini i Bardhë është…", a:["Lum","Det","Ishull"], correct:0 },
+          { q:"Një gatim i zakonshëm është…", a:["Flia","Sashimi","Crepe franceze vetëm"], correct:0 }
+        ]
+      },
+
+      {
+        id:"lezhe",
+        name:"Lezhë",
+        tagline:"Bregdet & histori",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Stema_e_Qarkut_Lezh%C3%AB.svg/960px-Stema_e_Qarkut_Lezh%C3%AB.svg.png",
+        info:"Qarku i Lezhës është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqje prej 1.588 km². Qarku i Lezhës i përfshin rrethin e Kurbinit, rrethin e Lezhës dhe rrethin e Mirditës. Qendra e Qarkut të Lezhës ndodhet në qytetin e Lezhës. ISO 3166-2-Code është AL-08. Qarku i Lezhës kufizohet në veri me Qarkun e Shkodrës, në verilindje me Qarkun e Kukësit, në lindje me Qarkun e Dibrës, në jug me Qarkun e Durrësit dhe në perëndim me Detin Adriatik. Qarku i Lezhës ka një popullsi prej 158.377 banorë.",
+        attractions:[
+          { name:"Shëngjini", desc:"Shëngjin është destinacion bregdetar i njohur për plazhet, portin dhe jetën verore.", img:"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/d9/3b/52/shengjin-beach.jpg?h=-1&s=1&w=1200" },
+          { name:"Laguna e Kune-Vainit", desc:"Laguna e Kune-Vainit është zonë e mbrojtur natyrore, ideale për shëtitje, fotografi dhe vëzhgim zogjsh.", img:"https://napglobalnetwork.org/wp-content/uploads/2025/01/shorthand/16144/deVxn3juhc/assets/Z7xdR0zEvR/istock-1165559760-4096x2713.jpg" },
+          { name:"Memoriali i Skënderbeut", desc:"Memoriali i Skënderbeut është vendi ku u mbajt Lidhja e Lezhës dhe ku prehet heroi kombëtar Gjergj Kastrioti Skënderbeu", img:"https://duemarivirtualtours.com/documents/20121/45115/Lezh%C3%AB%2C_Albania_%E2%80%93_Skanderbeg_Memorial_2016_02.jpg/392069d3-c973-3211-1742-8cbb06555f9d?t=1687270460742" }
+        ],
+        restos:[
+          { name:"Peshk & fruta deti", blurb:"Shije bregdetare pranë Shëngjinit.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRem0RN2tYB5OapuQIwIv5BXUBE613lMhiauQ&s" },
+          { name:"Byrek me spinaq", blurb:"I thjeshtë dhe i shpejtë.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBjwgQJZ77XX0hhFJPQPBrmCLGJDl6B4ALpg&s" },
+          { name:"Tavë peshku", blurb:"Pjekje në furrë me erëza mesdhetare.", img:"https://atlantiku.com/wp-content/uploads/2023/04/tave-peshku.jpg" }
+        ],
+        quiz:[
+          { q:"Shëngjini është…", a:["Plazh në qarkun Lezhë","Mal i lartë","Liqen"], correct:0 },
+          { q:"Kune-Vain është…", a:["Laguna/zonë natyrore","Kështjellë e braktisur","Muze modern"], correct:0 },
+          { q:"Lezha kombinon…", a:["Bregdet dhe histori","Ski dhe shkretëtirë","Vullkane"], correct:0 },
+          { q:"Ushqim tipik në bregdet është…", a:["Peshk & fruta deti","Tacos","Pho"], correct:0 },
+          { q:"Qarku është në…", a:["Veri-perëndim","Jug-lindje ekstrem","Ishull"], correct:0 }
+        ]
+      },
+
+      {
+        id:"shkoder",
+        name:"Shkodër",
+        tagline:"Liqen, kala & traditë",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Stema_e_Qarkut_Shkod%C3%ABr.svg/960px-Stema_e_Qarkut_Shkod%C3%ABr.svg.png",
+        info:"Qarku i Shkodrës është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqje prej 1.588 km². Qarku i Shkodrës përfshin rrethin e Malësisë së Madhe, rrethin e Pukës dhe rrethin e Shkodrës. Ka një kryetar Qarku me seli tek Ndërtesa e Prefekturës dhe këshilltarët e zgjedhur nga zonat përkatëse. Qendra e Qarkut të Shkodrës ndodhet në qytetin e Shkodrës. ISO 3166-2-Code është AL-10. Qarku i Shkodrës kufizohet në veri me Malin e Zi, në lindje me Qarkun e Kukësit, në jug me Qarkun e Lezhës dhe në perëndim me Detin Adratik.",
+        attractions:[
+          { name:"Kalaja e Rozafës", desc:"Kalaja e Rozafës është simboli i qytetit. Ndodhet mbi një kodër dhe ofron pamje spektakolare mbi Shkodrën, liqenin dhe lumenjtë.", img:"https://elitetravel-albania.com/wp-content/uploads/2020/04/views-from-rozafa-castle.jpg" },
+          { name:"Liqeni i Shkodrës", desc:"Liqeni i Shkodrës është liqeni më i madh në Ballkan, ideal për shëtitje, vëzhgim zogjsh dhe aktivitete natyrore.", img:"https://javanews.al/wp-content/uploads/2020/06/liqeni-shkodres.jpg" },
+          { name:"Thethi (Alpet Shqiptare)", desc:"Thethi është një nga destinacionet më të bukura alpine, me ujëvara, shtigje dhe natyrë të paprekur.", img:"https://upload.wikimedia.org/wikipedia/commons/8/87/Theth_Church_Albania.jpg" }
+        ],
+        restos:[
+          { name:"Tavë krapi", blurb:"Gatimi më karakteristik i zonës, sidomos pranë Liqenit të Shkodrës. Përgatitet me krap, qepë, domate dhe erëza, i pjekur në furrë.", img:"https://agroweb.org/wp-content/uploads/2017/08/tave-krapi.jpg" },
+          { name:"Përpeq", blurb:"Gatim tradicional me mish, qepë dhe erëza, i gatuar ngadalë në enë balte ose tigan të thellë.", img:"https://agroweb.org/wp-content/uploads/2020/09/perpeqq.jpg" },
+          { name:"Mish i tharë", blurb:"Mish (kryesisht viçi ose dele) i kripur dhe i tharë, përdorej për dimër dhe shoqëronte gatime të thjeshta.", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbIUx7zjfBuLVN_PecWhSh5epHCx8EPZUw4g&s" }
+        ],
+        quiz:[
+          { q:"Kalaja ikonike e Shkodrës është…", a:["Rozafa","Petrela","Porto Palermo"], correct:0 },
+          { q:"Shkodra ka…", a:["Liqen të madh","Oqean","Shkretëtirë"], correct:0 },
+          { q:"Ura e Mesit është…", a:["Urë historike","Stadium","Muze"], correct:0 },
+          { q:"Një pjatë e lidhur me zonën është…", a:["Tavë krapi","Sushi","Pasta carbonara"], correct:0 },
+          { q:"Shkodra ndodhet në…", a:["Veri","Jug ekstrem","Ishull"], correct:0 }
+        ]
+      },
+
+      {
+        id:"tirane",
+        name:"Tiranë",
+        tagline:"Kryeqytet modern & kulturë",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Stema_e_Qarkut_Tiran%C3%AB.svg/960px-Stema_e_Qarkut_Tiran%C3%AB.svg.png",
+        info:"Qarku i Tiranës është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqje prej 1.586 km². Qarku i Tiranës i përfshin pese bashki (Tirane, Kamza, Vora, Rrogozhina dhe Kavaja). Qendra e Qarkut të Tiranës ndodhet në qytetin e Tiranës. ISO 3166-2-Code është AL-11. Qarku i Tiranës kufizohet në veri me Qarkun e Durrësit, në verilindje me Qarkun e Dibrës, në juglindje me Qarkun e Elbasanit, në jug me Qarkun e Fierit dhe në perëndim me Detin Adriatik. Rajoni i Tiranës ka një popullsi prej 800.197 banorësh (2009).",
+        attractions:[
+          { name:"Sheshi Skënderbej", desc:"Sheshi Skënderbej është zemra e kryeqytetit, i rrethuar nga monumente kryesore dhe institucione kulturore.", img:"https://lp-cms-production.imgix.net/2019-06/5999b6527508197d47c77b95ac8ae552-sheshi-skenderbej.jpg?auto=format&crop=faces%2Cedges&fit=crop&h=640&q=75&w=1920" },
+          { name:"Mali i Dajtit", desc:"Parku Kombëtar i Dajtit është destinacion ideal për ajër të pastër, shëtitje dhe pamje panoramike mbi Tiranën.", img:"https://cdn.getyourguide.com/img/tour/644669a380537.jpeg/145.jpg" },
+          { name:"Bunk’Art", desc:"Bunk’Art është muze i ndërtuar në ish-bunkerë, që pasqyron historinë e diktaturës komuniste.", img:"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/37/8e/ac/la-splendida-cupola-ingresso.jpg?h=-1&s=1&w=1200" }
+        ],
+        restos:[
+          { name:"Tavë Dheu", blurb:"Një nga gatimet më të njohura, përgatitet me mish qengji, kos, vezë dhe oriz.", img:"https://www.willflyforfood.net/wp-content/uploads/2021/07/albanian-food-tave-kosi.jpg.webp" },
+          { name:"Fërgesë tiranase", blurb:"Gatim shumë karakteristik me speca, domate, gjizë dhe gjalpë, i shërbyer zakonisht i ngrohtë.", img:"https://www.tasteatlas.com/images/dishes/98dce5de77744f62bdadd78048216966.jpg" },
+          { name:"Petulla", blurb:"Ëmbëlsirë tradicionale, e shërbyer zakonisht me sheqer pluhur, mjaltë ose reçel.", img:"https://www.artigatimit.com/wp-content/uploads/2020/04/petulla-te-fryra-artigatimit-pancakes-albanian-food-traditional.jpg" }
+        ],
+        quiz:[
+          { q:"Tirana është…", a:["Kryeqyteti i Shqipërisë","Qytet port","Ishull"], correct:0 },
+          { q:"Sheshi kryesor është…", a:["Skënderbej","Nënë Tereza (aeroport)","Rozafa"], correct:0 },
+          { q:"Mali pranë Tiranës është…", a:["Dajti","Korabi","Tomorri"], correct:0 },
+          { q:"Blloku njihet për…", a:["Kafene dhe jetë urbane","Ski","Lundrim"], correct:0 },
+          { q:"Një gatim i njohur është…", a:["Fërgesë","Sushi","Curry"], correct:0 }
+        ]
+      },
+
+      {
+        id:"vlore",
+        name:"Vlorë",
+        tagline:"Det, histori & riviera",
+        badge:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Stema_e_Qarkut_Vlor%C3%AB.svg/500px-Stema_e_Qarkut_Vlor%C3%AB.svg.png",
+        info:"Qarku i Vlorës është një nga 12 qarqet në Shqipëri dhe ka një sipërfaqje prej 2.706 km². Qarku i Vlorës përfshin bashkitë: Vlorë, Selenicë, Himarë, Sarandë, Konispol, Finiq dhe Delvinë. Qendra e Qarkut të Vlorës ndodhet në qytetin e Vlorës. ISO 3166-2-Code është AL-12. Qarku i Vlorës kufizohet në veri me Qarkun e Fierit, në lindje Qarkun e Gjirokastrës, në jug me Greqinë dhe në jugperëndim deri në perëndim me Detin Adriatik dhe Detin Jon gjatë Bregdetit. Rajoni i Vlorës ka një popullsi prej 181.996 banorësh.",
+        attractions:[
+          { name:"Kalaja e Kaninës", desc:"Kalaja e Kaninës ofron pamje panoramike mbi Vlorën dhe Gjirin e saj.", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Kalaja_e_Kanin%C3%ABs.jpg/1200px-Kalaja_e_Kanin%C3%ABs.jpg" },
+          { name:"Gadishulli i Karaburunit & Ishulli i Sazanit", desc:"Karaburun-Sazan është park detar me shpella, plazhe të virgjëra dhe ujëra të pastra.", img:"https://eia476h758b.exactdn.com/wp-content/uploads/2023/07/Karaburun-Peninsula-Albania-scaled.jpg?lossy=1&ssl=1&strip=all" },
+          { name:"Riviera (Himarë/Dhërmi)", desc:"Dhërmi është i famshëm për ujërat kristal të Jonit dhe plazhet me gurë të bardhë.Himarë ofron plazhe të bukura, qytetin e vjetër dhe atmosferë mesdhetare.", img:"https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=60" }
+        ],
+        restos:[
+          { name:"Kukurec", blurb:"Gatim shumë tipik lab, i përgatitur me të brendshme qengji, i pjekur në hell ose në tavë. Shumë i zakonshëm në fshatrat e Vlorës.", img:"https://media-cdn.tripadvisor.com/media/photo-s/1b/7c/b7/6b/kukurec.jpg" },
+          { name:"Peshk në zgarrë / tavë", blurb:"Zona bregdetare njihet për levrek, kocë, barbun, të gatuar thjesht me vaj ulliri, hudhër dhe limon.", img:"https://media-cdn.tripadvisor.com/media/photo-s/1c/eb/52/8b/peshk-ne-zgare.jpg" },
+          { name:"Gliko shtëpie", blurb:"Ëmbëlsirë shumë karakteristike e zonës së jugut, sidomos gliko fiku, arre, portokalli.", img:"https://www.artigatimit.com/wp-content/uploads/2015/08/gliko-shalqiri-artigatimit-embelsira-receta-gatimi.jpg" }
+        ],
+        quiz:[
+          { q:"Vlora lidhet shumë me…", a:["Rivierën dhe detin","Shkretëtirën","Liqenet alpine vetëm"], correct:0 },
+          { q:"Karaburuni është…", a:["Zonë bregdetare","Qytet në veri","Mal i lartë në lindje"], correct:0 },
+          { q:"Atraksion panoramik është…", a:["Kuzum Baba","Apolonia","Rozafa"], correct:0 },
+          { q:"Ushqim tipik është…", a:["Peshk i freskët","Ramen","Tacos"], correct:0 },
+          { q:"Riviera njihet për…", a:["Plazhe dhe peizazhe","Ski gjithë vitin","Shkretëtirë rëre"], correct:0 }
+        ]
+      }
+    ];
+
+    const LS_KEY = "explore_albania_state_v2";
+    const defaultState = {
+      points:0,
+      badges:[],
+      lastQuiz:{},
+      foodPhotos:{} // foodPhotos[qarkId][restIndex] = dataURL
+    };
+    const state = loadState();
+    let activeId = null;
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        return { ...structuredClone(defaultState), ...parsed };
+      }catch(e){
+        return structuredClone(defaultState);
+      }
+    }
+    function saveState(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      renderHud();
+      renderBadges();
+    }
+    function shuffleAnswers(question){
+      const answers = [...question.a];
+      const correctAnswer = answers[question.correct];
+      
+      // Fisher-Yates shuffle
+      for(let i = answers.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [answers[i], answers[j]] = [answers[j], answers[i]];
+      }
+      
+      // Find where the correct answer ended up
+      const correctIndex = answers.indexOf(correctAnswer);
+      
+      return {
+        answers: answers,
+        correctIndex: correctIndex
+      };
+    }
+    function addPoints(n){
+      state.points += n;
+      saveState();
+    }
+    function hasBadge(id){ return state.badges.includes(id); }
+    function awardBadge(qark){
+      if(hasBadge(qark.id)) return false;
+      state.badges.push(qark.id);
+      addPoints(50);
+      return true;
+    }
+
+    // =======================
+    // RENDER HUD & BADGES
+    // =======================
+    function renderHud(){
+      document.getElementById("points").textContent = state.points;
+      document.getElementById("badgeCount").textContent = state.badges.length;
+    }
+    function renderBadges(){
+      const wrap = document.getElementById("badges");
+      wrap.innerHTML = "";
+      if(state.badges.length === 0){
+        wrap.innerHTML = `<p class="tiny">S’ke badge ende. Zgjidh një qark → bëj quiz (≥3/5) → upload foto.</p>`;
+        return;
+      }
+      for(const bid of state.badges){
+        const q = DATA.find(x=>x.id===bid);
+        const el = document.createElement("div");
+        el.className = "badge";
+        if(q?.badge){
+          el.innerHTML = `<img src="${q.badge}" alt="${q?.name ?? bid} badge"><span><b>${q?.name ?? bid}</b> badge</span>`;
+        } else {
+          el.innerHTML = `<span class="star"></span><span><b>${q?.name ?? bid}</b> badge</span>`;
+        }
+        wrap.appendChild(el);
+      }
+    }
+
+    // =======================
+    // MAP
+    // =======================
+    function renderMap(){
+      const map = document.getElementById("map");
+      map.innerHTML = "";
+      DATA.forEach(q=>{
+        const b = document.createElement("div");
+        b.className = "region";
+        b.dataset.id = q.id;
+        b.innerHTML = `
+          <div class="glow"></div>
+          <div class="name">${q.name}</div>
+          <div class="tag">${q.tagline}</div>
+        `;
+        b.addEventListener("click", ()=>selectQark(q.id));
+        map.appendChild(b);
+      });
+      updateActiveMap();
+    }
+    function updateActiveMap(){
+      document.querySelectorAll(".region").forEach(el=>{
+        el.classList.toggle("active", el.dataset.id===activeId);
+      });
+    }
+
+    // =======================
+    // FOOD PHOTO HELPERS
+    // =======================
+    function getFoodPhoto(qarkId, restIndex){
+      const perQark = state.foodPhotos?.[qarkId];
+      return perQark ? perQark[String(restIndex)] : null;
+    }
+    function setFoodPhoto(qarkId, restIndex, dataUrl){
+      if(!state.foodPhotos) state.foodPhotos = {};
+      if(!state.foodPhotos[qarkId]) state.foodPhotos[qarkId] = {};
+      state.foodPhotos[qarkId][String(restIndex)] = dataUrl;
+      saveState();
+    }
+
+    // =======================
+    // PANEL (QARK)
+    // =======================
+    function selectQark(id){
+      activeId = id;
+      updateActiveMap();
+
+      const q = DATA.find(x=>x.id===id);
+      document.getElementById("panelTitle").textContent = q.name;
+      document.getElementById("panelSubtitle").textContent = q.tagline;
+
+      document.getElementById("activeChip").style.display = "flex";
+      document.getElementById("activeName").textContent = q.name;
+
+      const last = state.lastQuiz[id];
+      const quizStatus = last
+        ? `<span class="${last.passed ? "good":"bad"}">${last.passed ? "Quiz kaluar" : "Quiz dështuar"} (${last.score}/5)</span>`
+        : `<span class="msg">Quiz s’është bërë ende</span>`;
+
+      const panel = document.getElementById("panel");
+
+      panel.innerHTML = `
+        <div class="hero">
+          <h3>${q.name}</h3>
+          <div class="meta">
+            <span>• ${q.tagline}</span>
+            <span>• Atraksione: 3</span>
+            <span>• Status quiz: ${quizStatus}</span>
+          </div>
+          <p class="tiny" style="margin-top:10px">${q.info}</p>
+        </div>
+
+        <div class="section-title">
+          <h4>📍 Atraksionet turistike (klikoni pin)</h4>
+          <span class="msg">Kliko kartën → imazh → 360°</span>
+        </div>
+        <div class="pins">
+          ${q.attractions.map((a,i)=>`
+            <div class="pin" data-attr="${i}">
+              <span class="dot"></span><b>${a.name}</b>
+              <small>${a.desc}</small>
+              <div class="thumb" style="background-image:
+                linear-gradient(120deg, rgba(106,228,255,.20), rgba(167,139,250,.18)),
+                url('${a.img}')"></div>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="section-title" style="margin-top:6px">
+          <h4>🍽️ Restorante & gatime tradicionale</h4>
+          <span class="msg">Tani mund t’u vendosësh foto (upload)</span>
+        </div>
+        <div class="restos">
+          ${q.restos.map((r, idx)=>`
+            <div class="rest" data-rest="${idx}">
+              <div class="img" id="food_img_${q.id}_${idx}"></div>
+              <div class="txt">
+                <b>${r.name}</b>
+                <p>${r.blurb}</p>
+
+                <div class="food-upload">
+                  <input type="file" accept="image/*" id="food_file_${q.id}_${idx}">
+                  <button class="mini" id="food_save_${q.id}_${idx}">Ruaj foton</button>
+                  <span class="hint" id="food_hint_${q.id}_${idx}">Zgjidh një foto dhe kliko “Ruaj”.</span>
+                </div>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="section-title" style="margin-top:6px">
+          <h4>🧠 Quiz (5 pyetje)</h4>
+          <span class="msg">Duhet ≥3/5 për të fituar badge pas upload</span>
+        </div>
+
+        <div class="quiz" id="quizBox">
+          ${q.quiz.map((qq, idx)=>{
+            const shuffled = shuffleAnswers(qq);
+            return `
+            <div class="qrow" data-q="${idx}" data-correct="${shuffled.correctIndex}">
+              <div class="q">${idx+1}. ${qq.q}</div>
+              <div class="opts">
+                ${shuffled.answers.map((opt, j)=>`
+                  <label class="opt">
+                    <input type="radio" name="q_${idx}" value="${j}">
+                    <span>${opt}</span>
+                  </label>
+                `).join("")}
+              </div>
+            </div>
+          `}).join("")}
+
+          <div class="quiz-actions">
+            <button class="btn" id="submitQuiz">Dërgo Quiz</button>
+            <div class="msg" id="quizMsg">Status: ${last ? (last.passed ? `<span class="good">kaluar</span>` : `<span class="bad">dështuar</span>`) : "nuk është bërë"}</div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:6px">
+          <h4>📷 Upload foto nga ky qark</h4>
+          <span class="msg">S’jep badge pa quiz-in</span>
+        </div>
+        <div class="upload">
+          <input type="file" id="photoUpload" accept="image/*" />
+          <button class="btn" id="claimBtn">Mer pikë & badge</button>
+          <p class="tiny" style="margin:0">Rregull: Quiz ≥3/5 + upload foto → badge i qarkut (+50 pikë).</p>
+        </div>
+        <div class="msg" id="uploadMsg"></div>
+      `;
+
+      // hook pins
+      panel.querySelectorAll(".pin").forEach(pin=>{
+        pin.addEventListener("click", ()=>{
+          const idx = Number(pin.dataset.attr);
+          openAttraction(q, idx);
+        });
+      });
+
+      // quiz submit
+      panel.querySelector("#submitQuiz").addEventListener("click", ()=>submitQuiz(q));
+
+      // upload + claim (badge flow)
+      let uploaded = false;
+      const uploadInput = panel.querySelector("#photoUpload");
+      const uploadMsg = panel.querySelector("#uploadMsg");
+      uploadInput.addEventListener("change", ()=>{
+        uploaded = uploadInput.files && uploadInput.files.length>0;
+        uploadMsg.innerHTML = uploaded
+          ? `<span class="good">Foto u ngarkua (lokalisht). Tani kliko “Mer pikë & badge”.</span>`
+          : `<span class="msg">Asnjë foto e zgjedhur.</span>`;
+      });
+      panel.querySelector("#claimBtn").addEventListener("click", ()=>{
+        claimBadgeFlow(q, uploaded);
+      });
+
+      // render existing food photos + wire upload per food
+      wireFoodUploads(q);
+    }
+
+    function wireFoodUploads(q){
+      q.restos.forEach((r, idx)=>{
+        const imgEl = document.getElementById(`food_img_${q.id}_${idx}`);
+        const fileEl = document.getElementById(`food_file_${q.id}_${idx}`);
+        const saveBtn = document.getElementById(`food_save_${q.id}_${idx}`);
+        const hintEl = document.getElementById(`food_hint_${q.id}_${idx}`);
+
+        // set current photo if exists
+        const saved = getFoodPhoto(q.id, idx);
+        const fallback = r.img && r.img.trim() ? r.img.trim() : "https://images.unsplash.com/photo-1604908177072-8f2a5ad7889b?auto=format&fit=crop&w=800&q=60";
+        const bgUrl = saved || fallback;
+
+        imgEl.style.backgroundImage = `
+          linear-gradient(120deg, rgba(106,228,255,.18), rgba(167,139,250,.16)),
+          url('${bgUrl}')
+        `;
+        imgEl.style.backgroundSize = "cover";
+        imgEl.style.backgroundPosition = "center";
+
+        let pendingDataUrl = null;
+
+        fileEl.addEventListener("change", ()=>{
+          const f = fileEl.files?.[0];
+          if(!f){
+            pendingDataUrl = null;
+            hintEl.textContent = "Zgjidh një foto dhe kliko “Ruaj”.";
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = ()=>{
+            pendingDataUrl = reader.result;
+            hintEl.textContent = "Foto gati ✅ tani kliko “Ruaj foton”.";
+            // preview instantly
+            imgEl.style.backgroundImage = `
+              linear-gradient(120deg, rgba(106,228,255,.18), rgba(167,139,250,.16)),
+              url('${pendingDataUrl}')
+            `;
+          };
+          reader.readAsDataURL(f);
+        });
+
+        saveBtn.addEventListener("click", ()=>{
+          if(!pendingDataUrl){
+            hintEl.textContent = "S’ka foto të re. Zgjidh një foto te input-i.";
+            return;
+          }
+          setFoodPhoto(q.id, idx, pendingDataUrl);
+          hintEl.textContent = "U ruajt ✅ (localStorage).";
+          addPoints(1); // bonus i vogël për përmbajtje
+        });
+      });
+    }
+
+    function submitQuiz(q){
+      const box = document.getElementById("quizBox");
+      let score = 0;
+
+      box.querySelectorAll(".qrow").forEach((row, idx)=>{
+        const chosen = row.querySelector(`input[name="q_${idx}"]:checked`);
+        const correctIndex = Number(row.dataset.correct);
+        if(chosen && Number(chosen.value) === correctIndex) score++;
+      });
+
+      const passed = score >= 3;
+      state.lastQuiz[q.id] = { passed, score };
+      if(passed){
+        addPoints(20);
+      }else{
+        addPoints(5);
+      }
+      saveState();
+
+      const msg = document.getElementById("quizMsg");
+      msg.innerHTML = passed
+        ? `<span class="good">Bravo! Kaluar: ${score}/5. Tani bëj upload foto për badge.</span>`
+        : `<span class="bad">Jo tamam: ${score}/5. Provo sërish (duhet ≥3/5).</span>`;
+    }
+
+    function claimBadgeFlow(q, uploaded){
+      const uploadMsg = document.getElementById("uploadMsg");
+      const last = state.lastQuiz[q.id];
+
+      if(!uploaded){
+        uploadMsg.innerHTML = `<span class="bad">Duhet të zgjedhësh një foto (upload) para se të marrësh badge.</span>`;
+        return;
+      }
+      if(!last || !last.passed){
+        uploadMsg.innerHTML = `<span class="bad">Duhet të kalosh quiz-in (≥3/5) para badge.</span>`;
+        return;
+      }
+      if(hasBadge(q.id)){
+        uploadMsg.innerHTML = `<span class="msg">E ke marrë tashmë badge për ${q.name}.</span>`;
+        return;
+      }
+
+      awardBadge(q);
+      uploadMsg.innerHTML = `<span class="good">Urime! Fitove badge: ${q.name} (+50 pikë). 🎉</span>`;
+      saveState();
+      renderBadges();
+    }
+
+    // =======================
+    // MODAL (ATTRACTION + 360)
+    // =======================
+    const modal = document.getElementById("attractionModal");
+    const mTitle = document.getElementById("mTitle");
+    const mImg = document.getElementById("mImg");
+    const mInfoTitle = document.getElementById("mInfoTitle");
+    const mInfoText = document.getElementById("mInfoText");
+    const viewer = document.getElementById("viewer360");
+    const panoFrame = document.getElementById("panoFrame");
+
+    const PANO_DEMO = "https://pannellum.org/images/alma.jpg";
+
+    function openAttraction(q, idx){
+      const a = q.attractions[idx];
+      mTitle.textContent = `${a.name} — ${q.name}`;
+      mInfoTitle.textContent = a.name;
+      mInfoText.textContent = a.desc + " " + "Këtu mund të shtosh edhe tekst më të gjatë me rreshta, histori, orare, çmime etj.";
+
+      mImg.style.backgroundImage = `
+        linear-gradient(120deg, rgba(106,228,255,.18), rgba(167,139,250,.16)),
+        url('${a.img}')
+      `;
+
+      viewer.style.display = "none";
+
+      const pannellumUrl =
+        "https://cdn.pannellum.org/2.5/pannellum.htm" +
+        "?panorama=" + encodeURIComponent(PANO_DEMO) +
+        "&autoLoad=true&compass=false&showZoomCtrl=true";
+      panoFrame.src = pannellumUrl;
+
+      modal.showModal();
+      addPoints(2);
+      saveState();
+    }
+
+    mImg.addEventListener("click", ()=>{
+      viewer.style.display = viewer.style.display === "none" ? "block" : "none";
+    });
+
+    document.getElementById("mClose").addEventListener("click", ()=>{
+      modal.close();
+      panoFrame.src = "about:blank";
+    });
+
+    // =======================
+    // BUTTONS
+    // =======================
+    document.getElementById("randomBtn").addEventListener("click", ()=>{
+      const pick = DATA[Math.floor(Math.random()*DATA.length)];
+      selectQark(pick.id);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", ()=>{
+      localStorage.removeItem(LS_KEY);
+      location.reload();
+    });
+
+
+    
+    // --- Photo album: load, render and wire upload (multi-file + attraction select) ---
+    const PHOTO_KEY = 'userPhotos_v1';
+    let userPhotos = JSON.parse(localStorage.getItem(PHOTO_KEY) || '[]');
+
+    function populatePlaceSelect(){
+      const sel = document.getElementById('photoPlaceSelect');
+      if(!sel) return;
+      sel.innerHTML = '<option value="">Zgjidh qark</option>';
+      DATA.forEach(d=>{
+        const o = document.createElement('option');
+        o.value = d.id;
+        o.textContent = d.name;
+        sel.appendChild(o);
+      });
+      // clear attraction select
+      const aSel = document.getElementById('photoAttractionSelect');
+      if(aSel) aSel.innerHTML = '<option value="">Zgjidh atraksion (opsionale)</option>';
+    }
+
+    function populateAttractionSelect(placeId){
+      const aSel = document.getElementById('photoAttractionSelect');
+      if(!aSel) return;
+      aSel.innerHTML = '<option value="">Zgjidh atraksion (opsionale)</option>';
+      const place = DATA.find(d=>d.id === placeId);
+      if(!place) return;
+      (place.attractions || []).forEach((at, i)=>{
+        const o = document.createElement('option');
+        o.value = String(i);
+        o.textContent = at.name;
+        aSel.appendChild(o);
+      });
+    }
+
+    function renderGallery(){
+      const g = document.getElementById('photoGallery');
+      if(!g) return;
+      g.innerHTML = '';
+      if(userPhotos.length === 0){
+        g.innerHTML = '<div class="tiny">Nuk ka ende foto. Shto foto me butonin "Shto Foto".</div>'
+        return;
+      }
+      userPhotos.forEach((p, idx)=>{
+        const el = document.createElement('div');
+        el.className = 'pin';
+        el.dataset.idx = idx;
+        el.innerHTML = `
+          <div class="thumb" style="background-image:url('${p.src}'); background-size:cover;"></div>
+          <b>${p.placeName}${p.attractionName ? ' — ' + p.attractionName : ''}</b>
+          <small style="display:block;color:var(--muted)">${new Date(p.time).toLocaleString()}</small>
+          <div style="margin-top:8px"><button class="btn" data-delete="${idx}">Fshi</button></div>
+        `;
+        g.appendChild(el);
+      });
+
+      g.querySelectorAll('button[data-delete]').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const i = Number(e.target.getAttribute('data-delete'));
+          if(isNaN(i)) return;
+          if(!confirm('Fshi këtë foto?')) return;
+          userPhotos.splice(i,1);
+          localStorage.setItem(PHOTO_KEY, JSON.stringify(userPhotos));
+          renderGallery();
+        });
+      });
+    }
+
+    // wire place -> attraction select
+    document.getElementById('photoPlaceSelect')?.addEventListener('change', (e)=>{
+      const pid = e.target.value;
+      populateAttractionSelect(pid);
+    });
+
+    document.getElementById('addPhotoBtn')?.addEventListener('click', ()=>{
+      const fileInput = document.getElementById('photoInput');
+      const sel = document.getElementById('photoPlaceSelect');
+      const aSel = document.getElementById('photoAttractionSelect');
+      if(!sel) { alert('Zgjidh një qark'); return; }
+      const placeId = sel.value;
+      if(!placeId){ alert('Zgjidh qarkun për foton'); return; }
+      if(!fileInput || !fileInput.files || fileInput.files.length === 0){ alert('Zgjidh të paktën një skedar fotografie'); return; }
+
+      const files = Array.from(fileInput.files);
+      const placeObj = DATA.find(d=>d.id===placeId);
+      const placeName = placeObj ? placeObj.name : placeId;
+      const attractionIndex = aSel && aSel.value !== '' ? Number(aSel.value) : null;
+      const attractionName = (attractionIndex !== null && placeObj && placeObj.attractions && placeObj.attractions[attractionIndex]) ? placeObj.attractions[attractionIndex].name : '';
+
+      let remaining = files.length;
+      files.forEach(file=>{
+        const reader = new FileReader();
+        reader.onload = function(ev){
+          const src = ev.target.result;
+          userPhotos.unshift({ src, placeId, placeName, attractionName, time: Date.now() });
+          remaining -= 1;
+          if(remaining === 0){
+            localStorage.setItem(PHOTO_KEY, JSON.stringify(userPhotos));
+            renderGallery();
+            fileInput.value = '';
+            sel.value = '';
+            if(aSel) aSel.innerHTML = '<option value="">Zgjidh atraksion (opsionale)</option>';
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // initialise album UI
+    populatePlaceSelect();
+    renderGallery();
+
+    // --- USER PROFILE ---
+    const PROFILE_KEY = 'userProfile_v1';
+    let userProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{"name":"Përdorues","avatar":"👤"}');
+
+    function renderProfile(){
+      const avatar = document.getElementById('profileAvatar');
+      const name = document.getElementById('profileName');
+      const stats = document.getElementById('profileStats');
+      if(avatar) avatar.textContent = userProfile.avatar || '👤';
+      if(name) name.textContent = userProfile.name || 'Përdorues';
+      if(stats) stats.textContent = `${state.points || 0} pikë · ${Object.keys(state.badges || {}).length} badge`;
+    }
+
+    document.getElementById('profileCard')?.addEventListener('click', ()=>{
+      const modal = document.getElementById('profileModal');
+      if(!modal) return;
+      document.getElementById('profileAvatarInput').value = userProfile.avatar || '👤';
+      document.getElementById('profileNameInput').value = userProfile.name || 'Përdorues';
+      modal.showModal();
+    });
+
+    document.getElementById('profileSaveBtn')?.addEventListener('click', ()=>{
+      const avatar = document.getElementById('profileAvatarInput').value.trim();
+      const name = document.getElementById('profileNameInput').value.trim();
+      if(!name){ alert('Emri nuk mund të jetë bosh'); return; }
+      userProfile = { avatar: avatar || '👤', name };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
+      renderProfile();
+      document.getElementById('profileModal').close();
+    });
+
+    document.getElementById('pClose')?.addEventListener('click', ()=>{
+      document.getElementById('profileModal').close();
+    });
+
+    renderProfile();
+
+    renderHud();
+    renderBadges();
+    renderMap();
+  </script>
+</body>
+</html>
