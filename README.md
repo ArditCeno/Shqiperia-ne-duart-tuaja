@@ -26,8 +26,6 @@ më tërheqëse dhe më praktike.
 - JavaScript
 - GitHub Pages
 
----
-
 ##  English
 
 **Explore Albania** is an interactive web project designed to simplify and
@@ -53,7 +51,6 @@ enjoyable way to discover new places.
 - JavaScript
 - GitHub Pages
 
----
 
 ## 👨‍💻 Author
 Ardit Ceno
